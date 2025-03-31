@@ -1,30 +1,50 @@
 import React, { useState } from 'react'
 import './App.css'
+import { motion } from "framer-motion";
 
-function App() {
+function App(){
+  const size = 3;
+  const [grid, setGrid] = useState(Array(size * size).fill("white"));
+  const [clickOrder, setClickOrder] = useState([]);
 
-  //can use hooks only inside a function
-  // current state, update the current state
+  const handleClick = (index) => {
+    if (grid[index] === "white") {
+      const newGrid = [...grid];
+      newGrid[index] = "green";
+      setGrid(newGrid);
+      setClickOrder([...clickOrder, index]);
+    }
 
-  const [count, setCount] = useState(0)
+    if (index === size * size - 1) {
+      changeToOrangeSequentially([...clickOrder, index]);
+    }
+  };
 
-  function decrementCount() {
-    setCount(previousCount => previousCount-1)
-  }
-
-  function incrementCount() {
-    setCount(previousCount => previousCount+1)
-  }
-
+  const changeToOrangeSequentially = (order) => {
+    order.forEach((idx, i) => {
+      setTimeout(() => {
+        setGrid((prevGrid) => {
+          const newGrid = [...prevGrid];
+          newGrid[idx] = "orange";
+          return newGrid;
+        });
+      }, i * 500);
+    });
+  };
 
   return (
-    <>
-      <button onClick={decrementCount}>-</button>
-      <span> {count} </span>
-      <button onClick={incrementCount}>+</button>
-
-    </>
-  )
+    <div className="grid grid-cols-3 gap-2 w-40 mx-auto mt-10">
+      {grid.map((color, index) => (
+        <motion.div
+          key={index}
+          className="w-12 h-12 border cursor-pointer"
+          style={{ backgroundColor: color }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => handleClick(index)}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default App
